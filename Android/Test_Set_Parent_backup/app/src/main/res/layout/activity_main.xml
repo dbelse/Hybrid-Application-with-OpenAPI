@@ -5,26 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Recv_Activity">
-
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="인증키"
-        />
+    tools:context=".MainActivity">
 
     <Button
-        android:text="인증키 입력"
-        android:id="@+id/send_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        />
+        android:id="@+id/Button01"
+        android:text="인증키 생성"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/Button02"
+        android:text="인증키 입력"/>
 
     <TextView
-        android:id="@+id/recv_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:id="@+id/Test"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Hello"/>
 
 </LinearLayout>

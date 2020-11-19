@@ -3,6 +3,7 @@ package com.example.test_set_parent;
 import android.Manifest;
 import android.app.AppComponentFactory;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -36,7 +37,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
-    String PhoneNum = null;
+    public String Child_PhoneNum;
+    public String PhoneNum;
+    public String Parent_PhoneNum;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         Button Send_Button = (Button) findViewById(R.id.Button01);
         Button Recv_Button = (Button) findViewById(R.id.Button02);
-        TextView t = (TextView) findViewById(R.id.Test);
 
 //        TelephonyManager telManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);//Phone number 얻어오기
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -69,6 +71,16 @@ public class MainActivity extends AppCompatActivity {
 //                startActivity(intent);
 //            }
 //        });
+
+        Intent a = getIntent();//sub activity에서 결과값을 받아옴
+
+        Child_PhoneNum = a.getStringExtra("Child_Phonenum"); // test용
+        TextView aa = (TextView)findViewById(R.id.tv1);
+        aa.setText("My Child Phone Number : "+ Child_PhoneNum);
+
+        Parent_PhoneNum = a.getStringExtra("Parent_Phonenum"); // test용
+        TextView bb = (TextView)findViewById(R.id.tv2);
+        bb.setText("My Parent Phone Number : "+ Parent_PhoneNum);
     }
 
     @Override
@@ -87,8 +99,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.recv_item :
-                Intent intent2 = new Intent(MainActivity.this, Recv_Activity.class);
-                startActivity(intent2);
+                Intent intent1 = new Intent(MainActivity.this, Recv_Activity.class);
+                intent1.putExtra("Phone_number",PhoneNum);
+                startActivity(intent1);
                 break;
             case R.id.get_info :
                 Toast.makeText(this, "개인정보 얻어오기", Toast.LENGTH_SHORT).show();

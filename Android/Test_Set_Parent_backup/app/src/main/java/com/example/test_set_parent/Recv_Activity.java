@@ -1,10 +1,7 @@
 package com.example.test_set_parent;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.SmsManager;
@@ -22,26 +19,21 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.MissingFormatArgumentException;
 
 //Receive Result
-//Server to Android
+
 public class Recv_Activity extends AppCompatActivity {
     private Handler mHandler;
     Socket socket;
-    private String ip = "20.20.1.191";
+    private String ip = "192.168.0.3";
     private int RECV_PORT = 10001;
     EditText et;
     TextView msgTV;
-    String Phone_num;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recv_);
-
-        Intent intent = getIntent();
-        Phone_num = intent.getExtras().getString("Phone_number");
 
         mHandler = new Handler();
         et = (EditText) findViewById(R.id.editText);
@@ -57,31 +49,6 @@ public class Recv_Activity extends AppCompatActivity {
             }
         });
 
-    }
-
-    void setChild_Phonenum(final String Child_Phonenum)
-    {
-        new AlertDialog.Builder(Recv_Activity.this)
-                .setTitle("")
-                .setMessage(Child_Phonenum +"으로 피보호자를 설정하시겠습니까?")
-                .setPositiveButton("네",
-                        new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick (DialogInterface arg0,int arg1){
-                                Intent intent = new Intent(Recv_Activity.this, MainActivity.class);
-                                intent.putExtra("Child_Phonenum",Child_Phonenum); //test용
-                                startActivity(intent); //test용
-                            }
-                        }
-                ).setNegativeButton("아니요",
-                new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick (DialogInterface arg0,int arg1){
-                    }
-                }
-        ).show();
     }
 
     @Override
@@ -103,34 +70,25 @@ public class Recv_Activity extends AppCompatActivity {
 
                 PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
                 String sndMsg = et.getText().toString();
-                out.println(Phone_num);
                 out.println(sndMsg);
 
                 BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                String Child_Phonenum = input.readLine();
+                String read = input.readLine();
+                mHandler.post(new Recv_Activity.msgUpdate(read));
+                Log.d("=============", sndMsg);
                 socket.close();
-                mHandler.post(new Recv_Activity.msgTest(Child_Phonenum));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-//    class msgUpdate implements Runnable {
-//        private String msg;
-//        public msgUpdate(String str) {
-//            this.msg = str;
-//        }
-//        public void run() {
-//            msgTV.setText(msg + "\n");
-//        }
-//    }
-
-    class msgTest implements  Runnable{
-        String Child_Phonenum;
-        msgTest(String Child_Phonenum){this.Child_Phonenum = Child_Phonenum;}
+    class msgUpdate implements Runnable {
+        private String msg;
+        public msgUpdate(String str) {
+            this.msg = str;
+        }
         public void run() {
-            if(!Child_Phonenum.equals("Wrong"))
-                setChild_Phonenum(Child_Phonenum);
+            msgTV.setText(msg + "\n");
         }
     }
 }
