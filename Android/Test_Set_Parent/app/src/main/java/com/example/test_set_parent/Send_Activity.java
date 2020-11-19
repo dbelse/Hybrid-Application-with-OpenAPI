@@ -26,7 +26,7 @@ import java.net.Socket;
 public class Send_Activity extends AppCompatActivity {
     private Handler mHandler;
     Socket socket;
-    private String ip = "192.168.0.3";
+    private String ip = "20.20.1.191";
     private int SEND_PORT = 10000;
     TextView msgTV;
     String Phone_num;

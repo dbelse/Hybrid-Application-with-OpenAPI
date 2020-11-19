@@ -25,7 +25,7 @@ import java.net.Socket;
 public class Recv_Activity extends AppCompatActivity {
     private Handler mHandler;
     Socket socket;
-    private String ip = "192.168.0.3";
+    private String ip = "20.20.1.191";
     private int RECV_PORT = 10001;
     EditText et;
     TextView msgTV;
