@@ -5,7 +5,6 @@ import android.app.AppComponentFactory;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -27,7 +26,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -42,34 +40,30 @@ public class MainActivity extends AppCompatActivity {
     public String Child_PhoneNum;
     public String PhoneNum;
     public String Parent_PhoneNum;
-    WebView wv;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //test용
-        wv = (WebView)findViewById(R.id.webview);
-        wv.getSettings().setJavaScriptEnabled(true);
-        wv.loadUrl("file:///android_asset/test.html");
 
-        SharedPreferences sf = getSharedPreferences("test",MODE_PRIVATE);
-        Child_PhoneNum = sf.getString("Child_Phonenum","Nothing");
-        Parent_PhoneNum = sf.getString("Parent_Phonenum","Nothing");
+        Button Send_Button = (Button) findViewById(R.id.Button01);
+        Button Recv_Button = (Button) findViewById(R.id.Button02);
 
         TelephonyManager telManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);//Phone number 얻어오기
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             return; //신경 쓸 필요 x
         }
-
         //Phone number얻어오기
         PhoneNum = telManager.getLine1Number();
         if(PhoneNum.startsWith("+82"))
         { PhoneNum = PhoneNum.replace("+82", "0"); }
 
+        Intent a = getIntent();//sub activity에서 결과값을 받아옴
+
+        Child_PhoneNum = a.getStringExtra("Child_Phonenum"); // test용
         TextView aa = (TextView)findViewById(R.id.tv1);
         aa.setText("My Child Phone Number : "+ Child_PhoneNum);
 
+        Parent_PhoneNum = a.getStringExtra("Parent_Phonenum"); // test용
         TextView bb = (TextView)findViewById(R.id.tv2);
         bb.setText("My Parent Phone Number : "+ Parent_PhoneNum);
     }

@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.SmsManager;
@@ -35,8 +34,6 @@ public class Recv_Activity extends AppCompatActivity {
     EditText et;
     TextView msgTV;
     String Phone_num;
-    SharedPreferences preferences;
-    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +42,6 @@ public class Recv_Activity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Phone_num = intent.getExtras().getString("Phone_number");
-
-        preferences = getSharedPreferences("test",MODE_PRIVATE);
-        editor = preferences.edit();
 
         mHandler = new Handler();
         et = (EditText) findViewById(R.id.editText);
@@ -76,8 +70,7 @@ public class Recv_Activity extends AppCompatActivity {
                             @Override
                             public void onClick (DialogInterface arg0,int arg1){
                                 Intent intent = new Intent(Recv_Activity.this, MainActivity.class);
-                                editor.putString("Child_Phonenum",Child_Phonenum);
-                                editor.commit();
+                                intent.putExtra("Child_Phonenum",Child_Phonenum); //test용
                                 startActivity(intent); //test용
                             }
                         }
@@ -122,6 +115,15 @@ public class Recv_Activity extends AppCompatActivity {
             }
         }
     }
+//    class msgUpdate implements Runnable {
+//        private String msg;
+//        public msgUpdate(String str) {
+//            this.msg = str;
+//        }
+//        public void run() {
+//            msgTV.setText(msg + "\n");
+//        }
+//    }
 
     class msgTest implements  Runnable{
         String Child_Phonenum;

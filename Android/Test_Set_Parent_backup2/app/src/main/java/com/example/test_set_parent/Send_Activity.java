@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -28,8 +27,6 @@ import java.net.Socket;
 //Send Rand_num
 public class Send_Activity extends AppCompatActivity {
     private Handler mHandler;
-    SharedPreferences preferences;
-    SharedPreferences.Editor editor;
     Socket socket;
     private String ip = "192.168.0.3";
     private int SEND_PORT = 10000;
@@ -52,9 +49,6 @@ public class Send_Activity extends AppCompatActivity {
         Intent intent = getIntent();
         Phone_num = intent.getExtras().getString("Phone_number");
 
-        preferences = getSharedPreferences("test",MODE_PRIVATE);
-        editor = preferences.edit();
-
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                     Send_Activity.ConnectThread th = new Send_Activity.ConnectThread();
@@ -75,9 +69,8 @@ public class Send_Activity extends AppCompatActivity {
             {
                 @Override
                 public void onClick (DialogInterface arg0,int arg1){
-                    editor.putString("Parent_Phonenum",Parent_Phonenum);
-                    editor.commit();
                     Intent intent = new Intent(Send_Activity.this, MainActivity.class);
+                    intent.putExtra("Parent_Phonenum",Parent_Phonenum); //test용
                     startActivity(intent); //test용
                 }
             }
