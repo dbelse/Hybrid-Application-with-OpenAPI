@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "61084514564",
+    "firebase_url": "https://pushtest-fed3e.firebaseio.com",
+    "project_id": "pushtest-fed3e",
+    "storage_bucket": "pushtest-fed3e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:61084514564:android:c8bf8b0cad136e68217851",
+        "android_client_info": {
+          "package_name": "com.example.backgroundaccesstest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "61084514564-k6g60b0sn1v2h71dfjsbvn2us1kpmd82.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBubB2GQg57gMfNtu7Usaxti8qFYoW0INY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "61084514564-k6g60b0sn1v2h71dfjsbvn2us1kpmd82.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
