@@ -1,5 +1,6 @@
 package com.example.test_set_parent;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,7 +31,7 @@ import java.util.MissingFormatArgumentException;
 public class Recv_Activity extends AppCompatActivity {
     private Handler mHandler;
     Socket socket;
-    private String ip = "192.168.0.3";
+    private String ip = "20.20.3.241";
     private int RECV_PORT = 10001;
     EditText et;
     TextView msgTV;
@@ -42,6 +43,11 @@ public class Recv_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recv_);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("인증키 입력");
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
         Phone_num = intent.getExtras().getString("Phone_number");

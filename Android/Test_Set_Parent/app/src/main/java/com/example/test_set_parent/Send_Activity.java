@@ -1,5 +1,6 @@
 package com.example.test_set_parent;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,7 +32,7 @@ public class Send_Activity extends AppCompatActivity {
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
     Socket socket;
-    private String ip = "192.168.0.3";
+    private String ip = "20.20.3.241";
     private int SEND_PORT = 10000;
     TextView msgTV;
     String Phone_num;
@@ -42,6 +43,11 @@ public class Send_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("인증키 생성");
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         mHandler = new Handler();
         btn = (Button) findViewById(R.id.button);

@@ -16,8 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Recv_Activity"></activity>
-        <activity android:name=".Send_Activity" />
+        <activity android:name=".Recv_Activity" android:parentActivityName=".MainActivity">
+        </activity>
+        <activity android:name=".Send_Activity" android:parentActivityName=".MainActivity">
+        </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
