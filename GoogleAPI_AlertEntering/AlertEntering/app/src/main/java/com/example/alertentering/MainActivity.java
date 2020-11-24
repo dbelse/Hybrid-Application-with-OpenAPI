@@ -15,8 +15,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,6 +28,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.pedro.library.AutoPermissions;
 import com.pedro.library.AutoPermissionsListener;
 
+import android.telephony.SmsManager;
+
 import static android.content.Context.VIBRATOR_SERVICE;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,10 +38,11 @@ public class MainActivity extends AppCompatActivity {
     PendingIntent proximityIntent;
     SupportMapFragment mapFragment;
     GoogleMap map;
-    Intent intent;
-    Context context;
 
-    MarkerOptions myLocationMarker;
+    // 문자 메세지 보내기 임시 세팅
+    String EmergencyMessage = "아이가 위험 지역으로 접근 중입니다.";
+    String textPhoneNo = "01085979198";
+
 
     // 임시로 위험지역 우리 학교
     double lat = 35.888005;
@@ -211,8 +212,20 @@ public class MainActivity extends AppCompatActivity {
             if(isEntering) {
                 Vibrator vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                 vib.vibrate(1000);
+                // 위험 지역 접근 시 진동 알림
+
                 Toast.makeText(context, "위험 지역에 접근중입니다...", Toast.LENGTH_LONG).show();
-                // 위험 지역 접근 시 진동과 토스트 메세지 알림
+                // 위험 지역 접근 시 토스트 메세지 알림
+
+                try {
+                    SmsManager smsManager = SmsManager.getDefault();
+                    smsManager.sendTextMessage(textPhoneNo, null, EmergencyMessage, null, null);
+                    Toast.makeText(getApplicationContext(), "전송 완료!", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "SMS failed, please try again later!", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                // 위험 지역 접근 시 보호자에게 문자 알림
             }
         }
     }

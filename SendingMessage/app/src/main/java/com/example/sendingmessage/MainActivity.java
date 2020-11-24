@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String phoneNo = textPhoneNo.getText().toString();
+                Toast.makeText(getApplicationContext(), phoneNo, Toast.LENGTH_SHORT).show();
                 try {
                     SmsManager smsManager = SmsManager.getDefault();
                     smsManager.sendTextMessage(phoneNo, null, message, null, null);
