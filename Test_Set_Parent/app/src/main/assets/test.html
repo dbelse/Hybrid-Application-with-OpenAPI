@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko" class="hfix">
+<head>
+    <meta charset="utf-8">
+    <title>Sample DataAPI</title>
+    <meta name="author" content="Kim kwangsung, Lim seonju">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,target-densitydpi=medium-dpi">
+    <meta name="keywords" content="생활안전지도,안전지도">
+    <meta name="description" content="생활안전지도포털 사이트에 오신것을 환영합니다.본 페이지는 WCAG2.0,KWCAG2.0 및 미래창조과학부의 정보시스템의 구축 운영 기술 지침을 준수하여 제작하였습니다.">
+    <meta http-equiv="X-UA-Compatible" content="IE=10">
+
+    <script src="/js/8open/jquery.js"></script>
+    <script src="/js/8open/jquery.easing.1.3.js"></script>
+    <script src="/js/8open/common.js"></script>
+    <script src="/js/8open/selcheck.js"></script>
+    <script src="/js/8open/jquery.slimscroll.js"></script>
+
+    <script src="/js/2dmap/jquery-1.10.2.min.js"></script>
+    <script src="/js/2dmap/jquery.bxslider.js"></script>
+    <script src="/js/2dmap/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="/js/2dmap/jquery.ui.datepicker-ko.js"></script>
+
+    <script src="http://www.openlayers.org/api/2.13/OpenLayers.js"></script>
+    <script src="/js/vworld.openapi.js"></script>
+    <script src="http://map.vworld.kr/js/apis.do?type=Base&apiKey=AAD4D8EE-31E5-3049-8067-34CAE32544D3&domain=www.safemap.go.kr"></script>
+
+    <script>
+var map;
+var mapBounds = new OpenLayers.Bounds(123 , 32, 134 , 43);
+var mapMinZoom = 7;
+var mapMaxZoom = 19;
+
+// avoid pink tiles
+OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
+OpenLayers.Util.onImageLoadErrorColor = "transparent";
+
+function init(){
+
+   var options = {
+       controls: [],
+       projection: new OpenLayers.Projection("EPSG:900913"),
+       displayProjection: new OpenLayers.Projection("EPSG:4326"),
+       units: "m",
+       controls : [],
+       numZoomLevels:21,
+       maxResolution: 156543.0339,
+       maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)
+       };
+   map = new OpenLayers.Map('basemap', options);
+
+   //======================================
+   //1. 배경지도 추가하기
+   vBase = new vworld.Layers.Base('VBASE');
+   if (vBase != null){map.addLayer(vBase);}
+
+   var switcherControl = new OpenLayers.Control.LayerSwitcher();
+   map.addControl(switcherControl);
+   switcherControl.maximizeControl();
+
+   map.zoomToExtent( mapBounds.transform(map.displayProjection, map.projection ) );
+   map.panTo(new OpenLayers.LonLat(14140009.710048,4524707.4183749));
+   //  map.panTo(14140740.892214,4521395.6921268);
+   if("A2SM_TFCACDSTATS_3"=="A2SM_CMMNPOI"){
+      map.zoomTo(17);
+   }else{
+      map.zoomTo(14);
+   }
+
+   map.addControl(new OpenLayers.Control.PanZoomBar());
+   map.addControl(new OpenLayers.Control.MousePosition());
+   map.addControl(new OpenLayers.Control.Navigation());
+   //map.addControl(new OpenLayers.Control.MouseDefaults()); //2.12 No Support
+   map.addControl(new OpenLayers.Control.Attribution({separator:" "}));
+   addWmsLayer();
+}
+function addWmsLayer()
+{
+    param = {name:"교통사고통계(차량단독)",
+         serverUrl:"http://www.safemap.go.kr/sm/apis.do?apikey=818JMQUT-818J-818J-818J-818JMQUTW3",
+         layername:"A2SM_TFCACDSTATS_3",
+         styles:""};
+   var wmsLayer = new OpenLayers.Layer.WMS( param.name, param.serverUrl,
+                     {layers: ''+param.layername,
+                     styles:param.styles,
+                     format: 'image/png',
+                     exceptions:'text/xml',
+                     transparent: true},
+                     {isBaseLayer: false}
+                     );
+   map.addLayer(wmsLayer);
+
+   param = {name:"치안사고통계(전체)",
+         serverUrl:"http://www.safemap.go.kr/sm/apis.do?apikey=818JMQUT-818J-818J-818J-818JMQUTW3",
+         layername:"A2SM_CRMNLSTATS",
+         styles:"A2SM_CrmnlStats_Tot"};
+   var wms = new OpenLayers.Layer.WMS( param.name, param.serverUrl,
+                     {layers: ''+param.layername,
+                     styles:param.styles,
+                     format: 'image/png',
+                     exceptions:'text/xml',
+                     transparent: true},
+                     {isBaseLayer: false}
+                     );
+   map.addLayer(wms);
+   $('#basemap').height($(window).height()-20);
+}
+
+</script>
+    <style type="text/css">
+.legend
+{
+   overflow: scroll;
+   position: absolute;
+   z-index: 9999;
+   right: 30px;
+   bottom: 30px;
+   width: 580px;
+   height: 230px;
+   background: #fff;
+   padding: 10px;
+}
+</style>
+</head>
+<body onload="init()">
+<div id="basemap"  style="height:800px;">
+</body>
+</html>
