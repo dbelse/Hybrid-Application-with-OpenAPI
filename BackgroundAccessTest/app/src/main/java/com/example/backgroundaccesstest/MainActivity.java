@@ -23,6 +23,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcel;
+import android.os.Vibrator;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -38,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String NOTIFICATION_CHANNEL_ID = "10001";
     NotificationManager m_NotiManager;
+    // 문자 메세지 보내기 임시 세팅
+    public String EmergencyMessage = "아이가 위험 지역으로 접근 중입니다.";
+    public String textPhoneNo = "01085979198";
 
     static final Integer APP_PERMISSION = 1;
 
@@ -106,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         m_NotiManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        askForPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION, APP_PERMISSION);
+        askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, APP_PERMISSION);
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             @Override
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED)
@@ -136,12 +141,15 @@ public class MainActivity extends AppCompatActivity {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         if (locationManager.getAllProviders().contains(LocationManager.GPS_PROVIDER))
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        String locationProvider = LocationManager.NETWORK_PROVIDER;
+        myLocation = locationManager.getLastKnownLocation(locationProvider);
     }
 
     class dangerPoint {//임시로 위험지혁 좌표 우리학교
         double x = 128.611637;
         double y = 35.887482;
     }
+
     dangerPoint dp = new dangerPoint();
 
     Location myLocation;
@@ -195,6 +203,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class BackCounter implements Runnable {
+        public int ISENTERING = 0;
+        public int cnt = 0;
+
         public void run() {
             while (!mBreak) {
                 /*myLocation ml = new myLocation();
@@ -204,18 +215,34 @@ public class MainActivity extends AppCompatActivity {
                 if (DistanceByDegree(myLocation.getLatitude(), myLocation.getLongitude(), dp.y,
                         dp.x) <= 500) {//임시로 위험지역과 거리 500m 이내 모두 경고
                     NotificationSomethings();
+                    ISENTERING = 1;
+                    cnt++;
+                } else {
+                    ISENTERING = 0;
+                    cnt = 0;
                 }
 
                 Log.d("Main",
                         "myLocation: (" + myLocation.getLatitude() + "," + myLocation.getLongitude() + ")" +
                                 " 위험지역과 " +
                                 "거리: " + (int) DistanceByDegree(myLocation.getLatitude(), myLocation.getLongitude(), dp.y,
-                                dp.x) + "m");
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    ;
+                                dp.x) + "m ");
+
+                if (ISENTERING == 1 && cnt == 1) {
+                    try {
+                        SmsManager smsManager = SmsManager.getDefault();
+                        smsManager.sendTextMessage(textPhoneNo, null, EmergencyMessage, null, null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    // 위험 지역 접근 시 보호자에게 문자 알림
                 }
+//
+//                try {
+//                    Thread.sleep(100);
+//                } catch (InterruptedException e) {
+//                    ;
+//                }
             }
         }
     }
