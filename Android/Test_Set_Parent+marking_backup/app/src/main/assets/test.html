@@ -19,9 +19,6 @@
     <script src="/js/vworld.openapi.js"></script>
     <script src="http://map.vworld.kr/js/apis.do?type=Base&apiKey=AAD4D8EE-31E5-3049-8067-34CAE32544D3&domain=www.safemap.go.kr"></script>
 
-
-    <script src="https://unpkg.com/elm-pep"></script>
-
     <script>
 var map; // 배경지도
 var mapBounds = new OpenLayers.Bounds(123 , 32, 134 , 43);
@@ -105,88 +102,26 @@ function addWmsLayer()
    map.addLayer(wmsLayer2);
 }
 
-function moveMarker() {
-    map.panTo(new OpenLayers.LonLat(14316894.77,4285320.20));
+function moveMarker(){
+
+map.panTo(new OpenLayers.LonLat(14316894.77,4285320.20));
+
 }
 
 //마크 생성
-function Marking() {
+function Marking()
+{
     var markers = new OpenLayers.Layer.Markers( "Markers" );
     map.addLayer(markers);
 
     var size = new OpenLayers.Size(21,25);
     var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-    var icon = new OpenLayers.Icon('https://cdn.icon-icons.com/icons2/619/PNG/512/map-marker-1_icon-icons.com_56710.png', size, offset);
+    var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
     markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(14316894.77,4285320.20),icon));
     markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(14316894.77,4285320.20),icon.clone()));
 }
 
 
-/* 여기는 꽉꽉 맘대루지롱 */
-var view = new View({
-  center: [0, 0],
-  zoom: 2,
-});
-
-var map = new Map({
-  layers: [
-    new TileLayer({
-      source: new OSM(),
-    }) ],
-  target: 'map',
-  view: view,
-});
-
-var geolocation = new Geolocation({
-  // enableHighAccuracy must be set to true to have the heading value.
-  trackingOptions: {
-    enableHighAccuracy: true,
-  },
-  projection: view.getProjection(),
-});
-
-geolocation.setTracking(true);
-
-geolocation.on('change', function() {
-    console.log('accuracy = ' + geolocation.getAccuracy() + 'm ' +
-        'altitude = ' + geolocation.getAltitude() + 'm ' +
-        'altitudeAccuracy = ' +  geolocation.getAltitudeAccuracy() + 'm ' +
-        'heading = ' + geolocation.getHeading() + 'rad ' +
-        'speed = ' + geolocation.getSpeed() + 'm/s');
-});
-geolocation.on('error', function(error) {
-    console.log('geolocation error: ' + error.message);
-});
-geolocation.on('change:position', function() {
-    var coordinates = geolocation.getPosition();
-    positionFeature.setGeometry(coordinates ? new Point(coordinates) : null);
-});
-
-var positionFeature = new Feature();
-positionFeature.setStyle(new Style({
-    image: new CircleStyle({
-        radius: 6,
-        fill: new Fill({
-            color: '#3399CC'
-        }),
-        stroke: new Stroke({
-            color: '#fff',
-            width: 2
-        })
-    })
-}));
-
-geolocation.on('change:position', function () {
-  var coordinates = geolocation.getPosition();
-  positionFeature.setGeometry(coordinates ? new Point(coordinates) : null);
-});
-
-new VectorLayer({
-  map: map,
-  source: new VectorSource({
-    features: [accuracyFeature, positionFeature],
-  }),
-});
 
 //<div id="basemap"  style="height:600px;"></div>
 </script>
