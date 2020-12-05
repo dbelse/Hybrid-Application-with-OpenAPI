@@ -230,7 +230,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.get_info :
                 Toast.makeText(this, "개인정보 얻어오기", Toast.LENGTH_SHORT).show();
-                return true;
+                Intent intent2 = new Intent(MainActivity.this, Information.class);
+                startActivity(intent2);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

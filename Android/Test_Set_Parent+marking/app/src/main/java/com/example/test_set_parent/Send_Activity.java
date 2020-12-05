@@ -1,5 +1,6 @@
 package com.example.test_set_parent;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -63,6 +64,10 @@ public class Send_Activity extends AppCompatActivity {
                     btn.setEnabled(false);
             }
         });
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("인증키 생성하기");
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     void setParent_Phonenum(final String Parent_Phonenum)

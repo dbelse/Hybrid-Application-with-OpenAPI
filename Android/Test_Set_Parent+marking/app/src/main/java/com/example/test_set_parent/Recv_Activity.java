@@ -1,5 +1,6 @@
 package com.example.test_set_parent;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -63,6 +64,9 @@ public class Recv_Activity extends AppCompatActivity {
             }
         });
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("인증키 입력하기");
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     void setChild_Phonenum(final String Child_Phonenum)
