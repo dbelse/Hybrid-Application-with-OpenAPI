@@ -69,6 +69,7 @@ function init(){
    map.addControl(new OpenLayers.Control.Attribution({separator:" "}));
 
    addWmsLayer();
+    Marking();
 }
 
 
@@ -108,28 +109,16 @@ function moveMarker() {
     map.panTo(new OpenLayers.LonLat(14316894.77,4285320.20));
 }
 
-//현위치 전역변수
-var current_lon = 14316894.77;
-var current_lat = 4285320.20;
-
-//마킹
-var markers = new OpenLayers.Layer.Markers( "Markers" );
-var beforeMarker;
-//마크생성
-function addMarking() {
+//마크 생성
+function Marking() {
+    var markers = new OpenLayers.Layer.Markers( "Markers" );
     map.addLayer(markers);
 
     var size = new OpenLayers.Size(21,25);
     var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
     var icon = new OpenLayers.Icon('https://cdn.icon-icons.com/icons2/619/PNG/512/map-marker-1_icon-icons.com_56710.png', size, offset);
-
-    marker = new OpenLayers.Marker(new OpenLayers.LonLat(current_lon,current_lat),icon);
-    beforeMarker = marker;
-    markers.addMarker(marker);
-}
-//마크 삭제
-function removeMarking() {
-    markers.removeMarker(beforeMarker);
+    markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(14316894.77,4285320.20),icon));
+    markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(14316894.77,4285320.20),icon.clone()));
 }
 
 
@@ -203,23 +192,11 @@ new VectorLayer({
 //좌표 얻어오는 함수
 function get_loc()
 {
-    var x = window.Android.get_xy('x');
-    var y = window.Android.get_xy('y');
-
-    //projection 변환
-    var prj4326 = new OpenLayers.Projection("EPSG:4326");
-    var prj900913 = new OpenLayers.Projection("EPSG:900913");
-    var point = new OpenLayers.LonLat(y, x);
-    var transferP = point.transform(prj4326, prj900913);
-
-    document.getElementById("x").value = transferP.lon;
-    document.getElementById("y").value = transferP.lat;
-    current_lon = transferP.lon;
-    current_lat = transferP.lat;
-    removeMarking();
-    addMarking();
+var x = window.Android.get_xy('x');
+var y = window.Android.get_xy('y');
+document.getElementById("x").value = x;
+document.getElementById("y").value = y;
 }
-
 </script>
 
     <style type="text/css">
@@ -242,6 +219,6 @@ function get_loc()
 <input type = "button" value="test_xy" onclick="get_loc()"/>
 <input id="x" type="text">
 <input id="y" type="text">
-<div id="basemap"  style="height:550px;"></div>
+<div id="basemap"  style="height:450px;"></div>
 </body>
 </html>
