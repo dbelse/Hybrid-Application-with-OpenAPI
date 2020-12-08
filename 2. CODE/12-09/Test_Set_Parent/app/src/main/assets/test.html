@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko" class="hfix">
+<head>
+    <meta charset="utf-8">
+    <title>Test</title>
+
+    <script src="/js/8open/jquery.js"></script>
+    <script src="/js/8open/jquery.easing.1.3.js"></script>
+    <script src="/js/8open/common.js"></script>
+    <script src="/js/8open/selcheck.js"></script>
+    <script src="/js/8open/jquery.slimscroll.js"></script>
+
+    <script src="/js/2dmap/jquery-1.10.2.min.js"></script>
+    <script src="/js/2dmap/jquery.bxslider.js"></script>
+    <script src="/js/2dmap/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="/js/2dmap/jquery.ui.datepicker-ko.js"></script>
+
+    <script src="http://www.openlayers.org/api/2.13/OpenLayers.js"></script>
+    <script src="/js/vworld.openapi.js"></script>
+    <script src="http://map.vworld.kr/js/apis.do?type=Base&apiKey=AAD4D8EE-31E5-3049-8067-34CAE32544D3&domain=www.safemap.go.kr"></script>
+
+
+    <script src="https://unpkg.com/elm-pep"></script>
+
+    <script>
+var map; // 배경지도
+var mapBounds = new OpenLayers.Bounds(123 , 32, 134 , 43);
+var mapMinZoom = 7;
+var mapMaxZoom = 19;
+
+// avoid pink tiles
+OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
+OpenLayers.Util.onImageLoadErrorColor = "transparent";
+
+function init(){
+   var options = {
+       controls: [],
+       projection: new OpenLayers.Projection("EPSG:900913"),
+       displayProjection: new OpenLayers.Projection("EPSG:4326"),
+       units: "m",
+       controls : [],
+       numZoomLevels:21,
+       maxResolution: 156543.0339,
+       maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)
+       };
+   map = new OpenLayers.Map('basemap', options);
+
+   //======================================
+   //1. 배경지도 추가하기
+   vBase = new vworld.Layers.Base('VBASE');
+   if (vBase != null){map.addLayer(vBase);
+   }
+
+   var switcherControl = new OpenLayers.Control.LayerSwitcher();
+   map.addControl(switcherControl);
+   switcherControl.maximizeControl();
+   map.zoomToExtent( mapBounds.transform(map.displayProjection, map.projection ) );
+   map.panTo(new OpenLayers.LonLat(14316894.77,4285320.20));
+     //map.panTo(14140740.892214,4521395.6921268);
+   if("A2SM_TFCACDSTATS_3"=="A2SM_CMMNPOI"){
+      map.zoomTo(17);
+   }else{
+      map.zoomTo(14);
+   }
+
+   map.addControl(new OpenLayers.Control.PanZoomBar());
+   map.addControl(new OpenLayers.Control.MousePosition());
+   map.addControl(new OpenLayers.Control.Navigation());
+   map.addControl(new OpenLayers.Control.Attribution({separator:" "}));
+
+   addWmsLayer();
+   play();
+}
+
+
+function addWmsLayer()
+{
+    param = {name:"안전녹색길(새벽) 04시 ~ 07시(전체)",
+        serverUrl:"http://www.safemap.go.kr/sm/apis.do?apikey=BT8E2FHH-BT8E-BT8E-BT8E-BT8E2FHH14",
+        layername:"A2SM_CRMNLHSPOT_TM2_TOT_G",
+        styles:"A2SM_CrmnlHspot_Tm2_Tot"};
+    var wmsLayer1 = new OpenLayers.Layer.WMS( param.name, param.serverUrl,
+                    {layers: ''+param.layername,
+                    styles:param.styles,
+                    format: 'image/png',
+                    exceptions:'text/xml',
+                    transparent: true},
+                    {isBaseLayer: false}
+                    );
+     map.addLayer(wmsLayer1);
+
+   param = {name:"치안사고통계(전체)",
+         serverUrl:"http://www.safemap.go.kr/sm/apis.do?apikey=BT8E2FHH-BT8E-BT8E-BT8E-BT8E2FHH14",
+         layername:"A2SM_CRMNLSTATS",
+         styles:"A2SM_CrmnlStats_Tot"};
+   var wmsLayer2 = new OpenLayers.Layer.WMS( param.name, param.serverUrl,
+                     {layers: ''+param.layername,
+                     styles:param.styles,
+                     format: 'image/png',
+                     exceptions:'text/xml',
+                     transparent: true
+                     },
+                     {isBaseLayer: false}
+                     );
+   map.addLayer(wmsLayer2);
+}
+
+function moveMarker() {
+    map.panTo(new OpenLayers.LonLat(14316894.77,4285320.20));
+}
+
+//현위치 전역변수
+var current_lon = 14316894.77;
+var current_lat = 4285320.20;
+
+//마킹
+var markers = new OpenLayers.Layer.Markers( "Markers" );
+var beforeMarker;
+//마크생성
+function addMarking() {
+    map.addLayer(markers);
+
+    var size = new OpenLayers.Size(21,25);
+    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+    var icon = new OpenLayers.Icon('https://cdn.icon-icons.com/icons2/619/PNG/512/map-marker-1_icon-icons.com_56710.png', size, offset);
+
+    marker = new OpenLayers.Marker(new OpenLayers.LonLat(current_lon,current_lat),icon);
+    beforeMarker = marker;
+    markers.addMarker(marker);
+}
+//마크 삭제
+function removeMarking() {
+    markers.removeMarker(beforeMarker);
+}
+
+
+/* 여기는 꽉꽉 맘대루지롱 */
+var view = new View({
+  center: [0, 0],
+  zoom: 2,
+});
+
+var map = new Map({
+  layers: [
+    new TileLayer({
+      source: new OSM(),
+    }) ],
+  target: 'map',
+  view: view,
+});
+
+var geolocation = new Geolocation({
+  // enableHighAccuracy must be set to true to have the heading value.
+  trackingOptions: {
+    enableHighAccuracy: true,
+  },
+  projection: view.getProjection(),
+});
+
+geolocation.setTracking(true);
+
+geolocation.on('change', function() {
+    console.log('accuracy = ' + geolocation.getAccuracy() + 'm ' +
+        'altitude = ' + geolocation.getAltitude() + 'm ' +
+        'altitudeAccuracy = ' +  geolocation.getAltitudeAccuracy() + 'm ' +
+        'heading = ' + geolocation.getHeading() + 'rad ' +
+        'speed = ' + geolocation.getSpeed() + 'm/s');
+});
+geolocation.on('error', function(error) {
+    console.log('geolocation error: ' + error.message);
+});
+geolocation.on('change:position', function() {
+    var coordinates = geolocation.getPosition();
+    positionFeature.setGeometry(coordinates ? new Point(coordinates) : null);
+});
+
+var positionFeature = new Feature();
+positionFeature.setStyle(new Style({
+    image: new CircleStyle({
+        radius: 6,
+        fill: new Fill({
+            color: '#3399CC'
+        }),
+        stroke: new Stroke({
+            color: '#fff',
+            width: 2
+        })
+    })
+}));
+
+geolocation.on('change:position', function () {
+  var coordinates = geolocation.getPosition();
+  positionFeature.setGeometry(coordinates ? new Point(coordinates) : null);
+});
+
+new VectorLayer({
+  map: map,
+  source: new VectorSource({
+    features: [accuracyFeature, positionFeature],
+  }),
+});
+
+//<div id="basemap"  style="height:600px;"></div>
+//좌표 얻어오는 함수
+function get_loc()
+{
+    var x = window.Android.get_xy('x');
+    var y = window.Android.get_xy('y');
+
+    //projection 변환
+    var prj4326 = new OpenLayers.Projection("EPSG:4326");
+    var prj900913 = new OpenLayers.Projection("EPSG:900913");
+    var point = new OpenLayers.LonLat(y, x);
+    var transferP = point.transform(prj4326, prj900913);
+
+    document.getElementById("x").value = transferP.lon;
+    document.getElementById("y").value = transferP.lat;
+    current_lon = transferP.lon;
+    current_lat = transferP.lat;
+    removeMarking();
+    addMarking();
+}
+
+//무한 실행함수
+function play()
+{
+    setInterval(get_loc, 100);
+}
+
+</script>
+
+    <style type="text/css">
+.legend
+{
+   overflow: scroll;
+   position: absolute;
+   z-index: 9999;
+   right: 30px;
+   bottom: 30px;
+   width: 580px;
+   height: 230px;
+   background: #fff;
+   padding: 10px;
+}
+    </style>
+</head>
+<body onload="init()">
+<input type = "button" value="test" onclick="moveMarker()"/>
+<input type = "button" value="test_xy" onclick="play()"/>
+<input id="x" type="text">
+<input id="y" type="text">
+<div id="basemap"  style="height:550px;"></div>
+</body>
+</html>
