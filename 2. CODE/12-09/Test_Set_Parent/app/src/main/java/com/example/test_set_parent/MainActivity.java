@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,6 +19,9 @@ import android.os.Build;
 import android.os.Bundle;
 
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import android.os.Handler;
@@ -158,6 +163,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLocationChanged(Location location) {
                 myLocation = location;
+                Log.d("Main", "\n피보호자 위치: (" + myLocation.getLatitude() + "," + myLocation.getLongitude() + ")" +
+                        getAddress(getApplicationContext(), myLocation.getLatitude(), myLocation.getLongitude()) +
+                        " 위험지역과 거리: " + (int) DistanceByDegree(myLocation.getLatitude(), myLocation.getLongitude(), dp.y, dp.x) + "m" );
             }
 
             @Override
@@ -345,8 +353,8 @@ public class MainActivity extends AppCompatActivity {
                 if (ISENTERING == 1 && cnt == 1) {
                     try {
                         SendMessage = EmergencyMessage + "\n피보호자 위치: (" + myLocation.getLatitude() + "," + myLocation.getLongitude() + ")" +
-                        " 위험지역과 거리: " + (int) DistanceByDegree(myLocation.getLatitude(), myLocation.getLongitude(), dp.y,
-                                dp.x) + "m ";
+                                getAddress(getApplicationContext(), myLocation.getLatitude(), myLocation.getLongitude()) +
+                                " 위험지역과 거리: " + (int) DistanceByDegree(myLocation.getLatitude(), myLocation.getLongitude(), dp.y, dp.x) + "m";
                         SmsManager smsManager = SmsManager.getDefault();
                         smsManager.sendTextMessage(Parent_PhoneNum, null, SendMessage, null, null);
                     } catch (Exception e) {
@@ -362,5 +370,27 @@ public class MainActivity extends AppCompatActivity {
 //                }
             }
         }
+    }
+
+    static public String getAddress(Context mContext, double lat, double lng) {
+        String nowAddress = "현 위치를 찾고 있습니다";
+        Geocoder geocoder = new Geocoder(mContext, Locale.KOREA);
+        List<Address> address;
+        try {
+            //세번째 파라미터는 좌표에 대해 주소를 리턴 받는 갯수로
+            //한좌표에 대해 두개이상의 이름이 존재할수있기에 주소배열을 리턴받기 위해 최대갯수 설정
+            address = geocoder.getFromLocation(lat, lng, 1);
+
+            if (address != null && address.size() > 0) {
+                // 주소 받아오기
+                nowAddress = address.get(0).getAddressLine(0);
+
+            }
+
+        } catch (IOException e) {
+            //Toast.makeText(MainActivity.this, "잘못된 포인트 설정입니다.", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+        return nowAddress;
     }
 }
