@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     NotificationManager m_NotiManager;
     // 문자 메세지 보내기 임시 세팅
     public String EmergencyMessage = "보호자가 위험 지역으로 접근 중입니다.";
+    public String SendMessage;
     WebView wv;
     private static final String ENTRY_URL = "file:///android_asset/test.html";
     Location myLocation;
@@ -343,8 +344,11 @@ public class MainActivity extends AppCompatActivity {
 
                 if (ISENTERING == 1 && cnt == 1) {
                     try {
+                        SendMessage = EmergencyMessage + "\n피보호자 위치: (" + myLocation.getLatitude() + "," + myLocation.getLongitude() + ")" +
+                        " 위험지역과 거리: " + (int) DistanceByDegree(myLocation.getLatitude(), myLocation.getLongitude(), dp.y,
+                                dp.x) + "m ";
                         SmsManager smsManager = SmsManager.getDefault();
-                        smsManager.sendTextMessage(Parent_PhoneNum, null, EmergencyMessage, null, null);
+                        smsManager.sendTextMessage(Parent_PhoneNum, null, SendMessage, null, null);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
