@@ -1,6 +1,7 @@
 # MoApp1-Project
 
 **캡틴대프리카 - 우리 가족의 방패**
+Hybrid-Application-with-OpenAPI
 ---
 
 * 참가주제: 공공데이터를 활용한 사회 문제 해결
